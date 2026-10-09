@@ -20,7 +20,7 @@ class ReleasePackagingTests(unittest.TestCase):
         installer = load('installer_under_test', 'build-windows-installer.py')
         with tempfile.TemporaryDirectory() as folder:
             runtime = Path(folder) / 'runtime'
-            for name in ('cloudstream.exe', 'runtime/bin/java.exe', 'platforms/qwindows.dll'):
+            for name in ('latchi-watching.exe', 'runtime/bin/java.exe', 'platforms/qwindows.dll'):
                 path = runtime / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b'TEST FIXTURE, NOT AN EXECUTABLE')

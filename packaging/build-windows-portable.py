@@ -15,7 +15,7 @@ def main():
     root = args.runtime.resolve()
     require_build_version(root / "cloudstream-version.txt")
     (root / "cloudstream-build.json").write_text(identity("windows-zip"), encoding="utf-8")
-    required = ('cloudstream.exe', 'runtime/bin/java.exe', 'libmpv-2.dll',
+    required = ('latchi-watching.exe', 'runtime/bin/java.exe', 'libmpv-2.dll',
                 'SDL2.dll', 'platforms/qwindows.dll', 'vulkan-1.dll',
                 'vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll', 'LICENSE')
     for name in required:
@@ -31,7 +31,7 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(args.output, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path in files:
-            archive.write(path, 'CloudStream-PC/' + path.relative_to(root).as_posix())
+            archive.write(path, 'LATCHI-WATCHING/' + path.relative_to(root).as_posix())
     with zipfile.ZipFile(args.output) as archive:
         bad = archive.testzip()
         if bad:

@@ -7,7 +7,11 @@ include(updates/updates.pri)
 VERSION = $$section(CS_VERSION, -, 0, 0)
 
 win32 {
-    TARGET = cloudstream
+    TARGET = latchi-watching
+    QMAKE_CXXFLAGS += /utf-8
+    RC_ICONS = $$PWD/../packaging/latchi-watching.ico
+    QMAKE_TARGET_PRODUCT = LATCHI WATCHING
+    QMAKE_TARGET_COMPANY = LATCHI
     CONFIG -= link_pkgconfig
     # Set MPV_LIB and SDL2_LIB to absolute .lib files in the Windows build environment.
     INCLUDEPATH += $$(MPV_INCLUDE) $$(SDL2_INCLUDE)
@@ -45,7 +49,8 @@ SOURCES += main.cpp \
     search/SearchHistoryModel.cpp \
     settings/SettingsPane.cpp \
     storage/XdgPaths.cpp \
-    ui/SmoothScrollController.cpp
+    ui/SmoothScrollController.cpp \
+    ui/LatchiSourceHub.cpp
 HEADERS += app/Logger.h \
     app/ProcessCompletion.h \
     app/ProviderHostCommand.h \
@@ -82,7 +87,8 @@ HEADERS += app/Logger.h \
     search/SearchHistoryModel.h \
     settings/SettingsPane.h \
     storage/XdgPaths.h \
-    ui/SmoothScrollController.h
+    ui/SmoothScrollController.h \
+    ui/LatchiSourceHub.h
 RESOURCES += resources.qrc
 
 isEmpty(PREFIX): PREFIX = /usr

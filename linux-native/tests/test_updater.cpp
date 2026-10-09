@@ -7,9 +7,9 @@ using namespace CloudStream::Updates;
 #include <QJsonObject>
 QByteArray fixture(Package p, QString version="0.1.0-preview.10", QByteArray payload="fixture package") {
  const auto name=assetName(version,p);
- return QJsonDocument(QJsonObject{{"tag_name","v"+version},{"draft",false},{"prerelease",false},{"body","Test-only release notes"},
+ return QJsonDocument(QJsonObject{{"tag_name","watching-cloudstream-v"+version},{"draft",false},{"prerelease",false},{"body","Test-only release notes"},
  {"assets",QJsonArray{QJsonObject{{"name",name},{"size",payload.size()},{"digest","sha256:"+QString(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex())},
- {"browser_download_url","https://github.com/dcenhance/cloudstream-pc/releases/download/v"+version+"/"+name}}}}}).toJson();
+ {"browser_download_url","https://github.com/latchidz/LATCHI-RELEASES/releases/download/watching-cloudstream-v"+version+"/"+name}}}}}).toJson();
 }
 #include "MockUpdateNetwork.h"
 #include "../updates/UpdateInstaller.h"
@@ -28,7 +28,7 @@ private slots:
   QVERIFY(dir.isValid());
   const QString subdir=dir.filePath(QString::fromUtf8("installer spaces & percent % ü"));
   QVERIFY(QDir().mkpath(subdir));
-  const QString source=subdir+"/CloudStream-PC-0.1.0-preview.5-Windows-x64-Setup.exe";
+  const QString source=subdir+"/LATCHI-WATCHING-0.1.0-preview.5-Windows-x64-Setup.exe";
   QVERIFY(QFile::copy(QCoreApplication::applicationFilePath(),source));
   const QString sentinel=dir.filePath("handoff.json");
   qputenv("CLOUDSTREAM_HANDOFF_TEST_SENTINEL",sentinel.toUtf8());
@@ -46,8 +46,8 @@ private slots:
   MockNetwork net; net.responses={{fixture(Package::AppImage)},{"fixture package"}};
   ReleaseUpdater u("0.1.0-preview.4",Package::AppImage,nullptr,&net);
   u.check(); QVERIFY(u.busy()); QTRY_VERIFY(!u.busy()); QVERIFY(u.available());
-  QCOMPARE(net.requests.first().url(),QUrl("https://api.github.com/repos/dcenhance/cloudstream-pc/releases/latest"));
-  QVERIFY(net.requests.first().rawHeader("User-Agent").startsWith("CloudStream-PC/"));
+  QCOMPARE(net.requests.first().url(),QUrl("https://api.github.com/repos/latchidz/LATCHI-RELEASES/releases?per_page=100"));
+  QVERIFY(net.requests.first().rawHeader("User-Agent").startsWith("LATCHI-WATCHING/"));
   u.download(); QTRY_VERIFY(!u.busy()); QVERIFY2(!u.downloadedPath().isEmpty(),qPrintable(u.status()));
   QFile f(u.downloadedPath()); QVERIFY(f.open(QIODevice::ReadOnly)); QCOMPARE(f.readAll(),QByteArray("fixture package"));
  }
@@ -136,15 +136,26 @@ private slots:
   asset.remove("digest"); assets[0]=asset; obj["assets"]=assets; QVERIFY(!parseRelease(QJsonDocument(obj).toJson(),Package::WindowsSetup,&error));
   QVERIFY(!parseRelease("{broken",Package::WindowsSetup,&error));
  }
+ void mixedReleaseChannelsAreNeverOffered() {
+  auto real=QJsonDocument::fromJson(fixture(Package::WindowsSetup,"1.0.1")).object();
+  auto other=real; other["tag_name"]="play-v99.0.0";
+  auto android=real; android["tag_name"]="v2026101001";
+  QJsonArray releases{other,android,real}; QString error;
+  auto selected=parseRelease(QJsonDocument(releases).toJson(),Package::WindowsSetup,&error);
+  QVERIFY2(selected.has_value(),qPrintable(error)); QCOMPARE(selected->version,QString("1.0.1"));
+  QVERIFY(!parseRelease(QJsonDocument(other).toJson(),Package::WindowsSetup,&error));
+  QVERIFY(!trustedUrl(QUrl("https://api.github.com/repos/dcenhance/cloudstream-pc/releases/latest")));
+  QVERIFY(!trustedUrl(QUrl("https://github.com/dcenhance/cloudstream-pc/releases/download/v1.0.0/file")));
+ }
  void assetsAndHosts() {
   const QString v="0.1.0-preview.4";
-  QCOMPARE(assetName(v,Package::WindowsSetup), "CloudStream-PC-0.1.0-preview.4-Windows-x64-Setup.exe");
-  QCOMPARE(assetName(v,Package::WindowsZip), "CloudStream-PC-0.1.0-preview.4-Windows-x64.zip");
-  QCOMPARE(assetName(v,Package::AppImage), "CloudStream-PC-0.1.0-preview.4-x86_64-system-runtime.AppImage");
+  QCOMPARE(assetName(v,Package::WindowsSetup), "LATCHI-WATCHING-0.1.0-preview.4-Windows-x64-Setup.exe");
+  QCOMPARE(assetName(v,Package::WindowsZip), "LATCHI-WATCHING-0.1.0-preview.4-Windows-x64.zip");
+  QCOMPARE(assetName(v,Package::AppImage), "LATCHI-WATCHING-0.1.0-preview.4-x86_64-system-runtime.AppImage");
   QCOMPARE(assetName(v,Package::Deb), "cloudstream-pc_0.1.0.preview.4_amd64.deb");
   QCOMPARE(assetName(v,Package::Rpm), "cloudstream-pc-0.1.0-0.preview.4.x86_64.rpm");
   QVERIFY(assetName(v,Package::Source).isEmpty());
-  QVERIFY(trustedUrl(QUrl("https://github.com/dcenhance/cloudstream-pc/releases/download/v0.1.0-preview.4/file")));
+  QVERIFY(trustedUrl(QUrl("https://github.com/latchidz/LATCHI-RELEASES/releases/download/watching-cloudstream-v0.1.0-preview.4/file")));
   QVERIFY(trustedUrl(QUrl("https://release-assets.githubusercontent.com/github-production-release-asset/123/file?token=x"),true));
   for(auto bad:{"http://github.com/dcenhance/cloudstream-pc/releases/download/a/b", "https://github.com.evil.test/x", "https://github.com/other/repo/releases/download/v1/file", "https://user@github.com/dcenhance/cloudstream-pc/releases/download/a/b", "https://127.0.0.1/x", "https://release-assets.githubusercontent.com:444/x"}) QVERIFY(!trustedUrl(QUrl(bad),true));
  }

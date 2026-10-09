@@ -7,7 +7,7 @@
 namespace CloudStream::Updates {
 enum class Package { Source, WindowsSetup, WindowsZip, AppImage, Deb, Rpm };
 inline QString assetName(const QString &v, Package p) {
- const QString prefix="CloudStream-PC-"+v;
+ const QString prefix="LATCHI-WATCHING-"+v;
  switch(p) {
  case Package::WindowsSetup: return prefix+"-Windows-x64-Setup.exe";
  case Package::WindowsZip: return prefix+"-Windows-x64.zip";
@@ -19,8 +19,8 @@ inline QString assetName(const QString &v, Package p) {
 }
 inline bool trustedUrl(const QUrl &u, bool redirect = false) {
  if(!u.isValid() || u.scheme()!="https" || !u.userInfo().isEmpty() || (u.port()!=-1 && u.port()!=443) || u.hasFragment()) return false;
- if(u.host()=="api.github.com") return u.path()=="/repos/dcenhance/cloudstream-pc/releases/latest" && !u.hasQuery();
- if(u.host()=="github.com") return u.path().startsWith("/dcenhance/cloudstream-pc/releases/download/") && !u.hasQuery();
+ if(u.host()=="api.github.com") return u.path()=="/repos/latchidz/LATCHI-RELEASES/releases" && u.query()=="per_page=100";
+ if(u.host()=="github.com") return u.path().startsWith("/latchidz/LATCHI-RELEASES/releases/download/watching-cloudstream-v") && !u.hasQuery();
  return redirect && (u.host()=="release-assets.githubusercontent.com" || u.host()=="objects.githubusercontent.com") && u.path().startsWith("/github-production-release-asset/");
 }
 struct Version { QString text; QList<quint64> core; QStringList pre; };

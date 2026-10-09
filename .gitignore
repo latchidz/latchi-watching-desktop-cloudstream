@@ -238,3 +238,7 @@ __pycache__/
 *.rpm
 *.exe
 *.dll
+
+# Native validation and plugin probe scratch outputs
+/linux-native/build-*/
+/verification/

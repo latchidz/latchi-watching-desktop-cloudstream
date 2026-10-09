@@ -21,6 +21,7 @@ private slots:
     }
     void homeSectionsYieldBetweenCardRows() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         QVERIFY(QTest::qWaitForWindowExposed(&window));
         QJsonArray sections;
@@ -51,6 +52,7 @@ private slots:
     }
     void homeRowCanRevealAllProviderTitlesInBoundedPages() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         QVERIFY(QTest::qWaitForWindowExposed(&window));
         QJsonArray items;
@@ -77,6 +79,7 @@ private slots:
     }
     void firstWheelDuringHomeResetIsNotRewound() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         QVERIFY(QTest::qWaitForWindowExposed(&window));
         QJsonArray sections;

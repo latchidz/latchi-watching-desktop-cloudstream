@@ -26,7 +26,7 @@ private slots:
             qputenv("CLOUDSTREAM_PROVIDER_HOST", nativeFixture.toUtf8());
         else if (profile.isValid())
             qputenv("CLOUDSTREAM_PROVIDER_HOST", (profile.path() + "/provider-host").toUtf8());
-        QSettings settings("CloudStream", "CloudStream Linux");
+        QSettings settings("LATCHI", "Watching CloudStream");
         settings.setValue("interface/windowMode", "Single-window navigation");
     }
     void initTestCase() {
@@ -37,7 +37,7 @@ private slots:
         qputenv("XDG_CACHE_HOME", (profile.path() + "/cache").toUtf8());
         QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, profile.path());
         QSettings::setPath(QSettings::NativeFormat, QSettings::UserScope, profile.path());
-        QSettings settings("CloudStream", "CloudStream Linux");
+        QSettings settings("LATCHI", "Watching CloudStream");
         settings.setValue("interface/windowMode", "Single-window navigation");
         settings.sync();
         // Exercise the real application stylesheet, not a second hand-maintained theme.
@@ -72,7 +72,7 @@ private slots:
     void realPlaybackFullscreenLifecycle() {
         QFETCH(bool, embedded);
         QFETCH(bool, maximized);
-        QSettings settings("CloudStream", "CloudStream Linux");
+        QSettings settings("LATCHI", "Watching CloudStream");
         settings.setValue("interface/windowMode", embedded ? "Single-window navigation" : "Separate windows");
         settings.sync();
         QTemporaryDir media;
@@ -80,6 +80,7 @@ private slots:
         QCOMPARE(QProcess::execute("ffmpeg", {"-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i",
             "testsrc2=size=960x540:rate=30", "-t", "30", "-c:v", "libx264", "-preset", "ultrafast", mediaPath}), 0);
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         window.openPlayerForPreview(mediaPath, {});
@@ -176,6 +177,7 @@ private slots:
         QVERIFY(history.upsert(entry));
 
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(2);
         auto *pages = window.findChild<QStackedWidget *>("appPages");
@@ -246,6 +248,7 @@ private slots:
 
     void playbackOccupiesWholeContentAndRestoresNavigation() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         QVERIFY(QTest::qWaitForWindowExposed(&window));
@@ -305,6 +308,7 @@ private slots:
         qputenv("CLOUDSTREAM_PROVIDER_HOST", helper.fileName().toUtf8());
         qputenv("CLOUDSTREAM_EPISODE_VIDEO", ("http://127.0.0.1:" + QString::number(server.serverPort()) + "/episode.mp4").toUtf8());
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.openDetailsForPreview("fixture.jar", "Fixture", "https://fixture.invalid/series");
         auto *details = window.findChild<QDialog *>("detailsDialog");
@@ -364,6 +368,7 @@ private slots:
 
     void updaterSettingsRenderAndLiveCheck() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.resize(1280, 960);
         window.show();
         window.openSettingsSectionForPreview("Updates and backup");
@@ -386,6 +391,7 @@ private slots:
     }
     void navigationDismissesDetailsBeforeRaisingSearch() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         QApplication::processEvents();
@@ -416,6 +422,7 @@ private slots:
 
     void embeddedDetailsCanOutliveAnOlderDetailsDialog() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.openDetailsForPreview("fixture.jar", "Fixture", "https://fixture.invalid/first");
         QPointer<QDialog> older = window.findChild<QDialog *>("detailsDialog");
@@ -440,6 +447,7 @@ private slots:
 
     void navigationWhileDetailsAreLoading() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         window.openDetailsForPreview("fixture.jar", "Fixture", "https://fixture.invalid/title");
@@ -451,6 +459,7 @@ private slots:
 
     void navigationDismissesEmbeddedPlayerButNotSeparateWindows() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         auto *pages = window.findChild<QStackedWidget *>("appPages");
@@ -476,6 +485,7 @@ private slots:
 
     void detailsDoNotRevealSearch() {
         CloudStreamWindow window(false);
+        window.showLatchiCatalog();
         window.show();
         window.selectPage(1);
         QApplication::processEvents();

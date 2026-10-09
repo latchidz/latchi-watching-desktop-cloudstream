@@ -9,9 +9,9 @@ namespace {
 QString appPath(QStandardPaths::StandardLocation location) {
     const auto suffix =
 #ifdef Q_OS_WIN
-        QStringLiteral("CloudStream");
+        QStringLiteral("LATCHI-WATCHING-CloudStream");
 #else
-        QStringLiteral("cloudstream-linux");
+        QStringLiteral("latchi-watching-cloudstream");
 #endif
     return QStandardPaths::writableLocation(location) + "/" + suffix;
 }

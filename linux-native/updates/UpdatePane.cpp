@@ -20,7 +20,7 @@ UpdatePane::UpdatePane(ReleaseUpdater *updater,QSettings *settings,QWidget *pare
  setAttribute(Qt::WA_StyledBackground, true);
  setStyleSheet("QWidget#appUpdateCard{background:#15151b;border:1px solid #30303a;border-radius:12px;} QLabel{background:transparent;color:#c9c9d2;} QPushButton{background:#252530;color:#f3f3f5;border:1px solid #3c3c4b;border-radius:8px;padding:9px 14px;} QPushButton:hover{background:#343449;} QPushButton:focus{border:1px solid #8b9bff;} QPushButton:disabled{color:#70707e;} QPlainTextEdit{background:#101015;color:#bdbdc8;border:1px solid #30303a;border-radius:8px;padding:8px;} QCheckBox{color:#c9c9d2;background:transparent;spacing:9px;} QCheckBox::indicator{width:18px;height:18px;border:1px solid #73738a;border-radius:4px;background:#20202b;} QCheckBox::indicator:checked{background:#536dfe;image:url(:/icons/check.svg);} QCheckBox::indicator:focus{border:2px solid #9aacff;} QProgressBar{border:1px solid #3c3c4b;border-radius:5px;text-align:center;color:#eee;background:#101015;} QProgressBar::chunk{background:#536dfe;}");
  auto *layout=new QVBoxLayout(this); layout->setContentsMargins(18,16,18,16); layout->setSpacing(12);
- auto *heading=new QLabel("CloudStream PC updates"); heading->setStyleSheet("font-size:18px;font-weight:700;color:#f3f3f5;"); layout->addWidget(heading);
+ auto *heading=new QLabel("تحديثات LATCHI WATCHING"); heading->setStyleSheet("font-size:18px;font-weight:700;color:#f3f3f5;"); layout->addWidget(heading);
  versions_=new QLabel; versions_->setObjectName("appUpdateVersions"); versions_->setTextFormat(Qt::PlainText); versions_->setWordWrap(true); layout->addWidget(versions_);
  auto *origin=new QLabel("Official releases · github.com/dcenhance/cloudstream-pc\n"+packageLabel(installed_)); origin->setWordWrap(true); layout->addWidget(origin);
  if(installed_==Package::Source || installed_==Package::WindowsZip || installed_==Package::Deb || installed_==Package::Rpm) {
@@ -74,7 +74,7 @@ void UpdatePane::apply(bool manual) {
  }
 #ifdef Q_OS_WIN
  if(setup) {
-  const auto expected=QFileInfo(qEnvironmentVariable("LOCALAPPDATA")+"/Programs/CloudStream PC").canonicalFilePath();
+  const auto expected=QFileInfo(qEnvironmentVariable("LOCALAPPDATA")+"/Programs/LATCHI WATCHING CloudStream").canonicalFilePath();
   if(expected.isEmpty() || expected.compare(QFileInfo(QCoreApplication::applicationDirPath()).canonicalFilePath(),Qt::CaseInsensitive)!=0) {
    QMessageBox::warning(this,"Installer location","This installation is not in the supported per-user installer directory. Download the Setup package and install manually to preserve your chosen location."); return;
   }

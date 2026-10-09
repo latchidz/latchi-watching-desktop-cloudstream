@@ -140,8 +140,9 @@ IntegratedPlayerWindow::IntegratedPlayerWindow(const SourceDiscovery &sourceDisc
       initialResumePosition(std::max(0.0, resumePositionSeconds)) {
     preferences.seekSeconds = std::clamp(preferences.seekSeconds, 5, 90);
     preferences.initialVolume = std::clamp(preferences.initialVolume, 0, 100);
+    setLayoutDirection(Qt::LeftToRight); // Timeline and transport remain chronological in an Arabic shell.
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(mediaTitle.isEmpty() ? "CloudStream Player" : mediaTitle);
+    setWindowTitle(mediaTitle.isEmpty() ? "LATCHI WATCHING Player" : mediaTitle);
     resize(1120, 720);
     setMinimumSize(760, 500);
     setStyleSheet(
@@ -201,7 +202,7 @@ IntegratedPlayerWindow::IntegratedPlayerWindow(const SourceDiscovery &sourceDisc
     topLayout->setContentsMargins(5, 5, 5, 5);
     auto *titles = new QVBoxLayout;
     titles->setSpacing(2);
-    titleLabel = new QLabel(mediaTitle.isEmpty() ? "CloudStream Player" : mediaTitle);
+    titleLabel = new QLabel(mediaTitle.isEmpty() ? "LATCHI WATCHING Player" : mediaTitle);
     titleLabel->setObjectName("playerTitle");
     titleLabel->setStyleSheet("font-size:14px;font-weight:700;");
     titleLabel->setAlignment(Qt::AlignCenter);

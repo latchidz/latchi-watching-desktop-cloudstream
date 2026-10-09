@@ -1,0 +1,173 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/3isk.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "3isk",
+    "internalName": "3isk",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 31166,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "iconUrl": "https://3esk.onl/wp-content/uploads/2021/01/3isk-logo.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-4cfc2ee656e3027e99593ca637015e80e620e968ed433f10999f41bac11a4492"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/eseek.cs3",
+    "status": 1,
+    "version": 3,
+    "name": "Eshek",
+    "internalName": "eseek",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 37973,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "iconUrl": "https://gesseh.net/wp-content/uploads/2024/10/keesatlogo.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-70bf9c63b28da3e848ede393cf592fa51d10f42b5518fac3e6c063662c17b166"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/Krmzy.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "Krmzy",
+    "internalName": "Krmzy",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "البحث لا يعمل حاليا مشكلة من الموقع",
+    "fileSize": 29631,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwTnAJOvyri3uHzHxjkEdlaBBKs8MAvIuJtFmCoo9u5qYiuFpHZjcl6tDi&s=10",
+    "apiVersion": 1,
+    "fileHash": "sha256-785b7fc9326398763dd7343b90658e28b5aae1f7ce3fa1de72fc09a67e6b99e6"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/MyCimaProvider.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "Mycima",
+    "internalName": "MyCimaProvider",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 45475,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "Movie",
+      "TvSeries",
+      "Anime",
+      "AsianDrama"
+    ],
+    "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxoF3lscri32oVf0iQlhbjFEoUn2xg3OmQIx4wYdDmqw&s",
+    "apiVersion": 1,
+    "fileHash": "sha256-ff8e09bb07cb94fad7216e8c6a29bdff3d5758e6f7f1c4b68bacad18935bfe5a"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/Topcinema.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "TopCinema",
+    "internalName": "Topcinema",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 28913,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "Movie",
+      "tvTypes"
+    ],
+    "iconUrl": "https://web8.topcinema.cam/wp-content/uploads/2023/05/cropped-icon-32x32.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-be724725a4ea3ce2c089e036449fb92405379c66d2470a337c155120c5b5de2f"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/TukTukcima.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "Tuktukcima",
+    "internalName": "TukTukcima",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 42902,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ10TEG3tTtkEF9_g3IslEP3xs0wx9EVhBs7b_H5M1gpg&s=10",
+    "apiVersion": 1,
+    "fileHash": "sha256-0d9353f8bd3daa0d533f746aaecae5d9379302369da7f439a2c181cb0e771808"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/Tuniflix.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "Tuniflix",
+    "internalName": "Tuniflix",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 26298,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "TvSeries",
+      "Movie",
+      "Drama"
+    ],
+    "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe95deIIAAbyR9ArSievPWdM2QwiVG9bbQ6Y1uDIbRBpathzSs45b8uQ4&s=10",
+    "apiVersion": 1,
+    "fileHash": "sha256-14a4553a97f20063f294bf38ab70317e54e496d94a4923ebad830dc966e63f88"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/builds/Wecima.cs3",
+    "status": 1,
+    "version": 1,
+    "name": "WeCima",
+    "internalName": "Wecima",
+    "authors": [
+      "Abodabodd"
+    ],
+    "description": "",
+    "fileSize": 29438,
+    "repositoryUrl": "https://github.com/Abodabodd/re-3arabi",
+    "language": "ar",
+    "tvTypes": [
+      "Movie",
+      "tvTypes"
+    ],
+    "iconUrl": "https://wecima.ac/static/img/favicon.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-98b3b61a6e305f48c154cbca21d6bc162d6514dab8ab6d8253978a1422924fdb"
+  }
+]

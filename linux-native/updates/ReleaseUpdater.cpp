@@ -19,7 +19,7 @@ void ReleaseUpdater::check() {
  if(busy_) return;
  available_=false; release_={}; downloaded_.clear(); file_.reset(); directory_.reset(); metadata_.clear();
  downloading_=false; busy_=true; status_="Checking GitHub Releases…"; deadline_.start(60000); emit changed();
- request(QUrl("https://api.github.com/repos/dcenhance/cloudstream-pc/releases/latest"));
+ request(QUrl("https://api.github.com/repos/latchidz/LATCHI-RELEASES/releases?per_page=100"));
 }
 void ReleaseUpdater::download() {
  if(busy_ || !available_) return;
@@ -42,7 +42,7 @@ void ReleaseUpdater::finish(QString status) {
 void ReleaseUpdater::request(const QUrl &url,int redirects) {
  if(!trustedUrl(url,redirects>0) || redirects>5) { finish("Blocked an untrusted update redirect."); return; }
  auto req=CloudStreamRequest::metadata(url);
- req.setRawHeader("User-Agent",("CloudStream-PC/"+current_+" (+https://github.com/dcenhance/cloudstream-pc)").toUtf8());
+ req.setRawHeader("User-Agent",("LATCHI-WATCHING/"+current_+" (+https://github.com/latchidz/latchi-watching-desktop-cloudstream)").toUtf8());
  req.setRawHeader("Accept",downloading_?"application/octet-stream":"application/vnd.github+json");
  req.setRawHeader("X-GitHub-Api-Version","2022-11-28");
  req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::ManualRedirectPolicy);
@@ -98,8 +98,26 @@ std::optional<Release> parseRelease(const QByteArray &json, Package package, QSt
  auto fail=[error](QString why)->std::optional<Release> { if(error) *error=why; return {}; };
  if(json.size()>metadataLimit) return fail("Release metadata exceeds safety limit.");
  QJsonParseError e; auto doc=QJsonDocument::fromJson(json,&e);
- if(e.error!=QJsonParseError::NoError || !doc.isObject()) return fail("Invalid GitHub release metadata.");
- auto o=doc.object(); auto tag=o["tag_name"].toString(); auto v=parseVersion(tag);
+ if(e.error!=QJsonParseError::NoError) return fail("Invalid GitHub release metadata.");
+ if(doc.isArray()) {
+  const auto releases=doc.array();
+  if(releases.size()>100) return fail("Too many release records.");
+  std::optional<Release> newest;
+  for(const auto &item:releases) {
+   const auto object=item.toObject();
+   if(!object["tag_name"].toString().startsWith("watching-cloudstream-v") || object["prerelease"].toBool()) continue;
+   QString ignored;
+   auto candidate=parseRelease(QJsonDocument(object).toJson(QJsonDocument::Compact),package,&ignored);
+   if(candidate && (!newest || compareVersions(candidate->version,newest->version).value_or(0)>0)) newest=candidate;
+  }
+  if(!newest) return fail("No compatible LATCHI WATCHING CloudStream release is available.");
+  return newest;
+ }
+ if(!doc.isObject()) return fail("Invalid GitHub release metadata.");
+ auto o=doc.object(); auto tag=o["tag_name"].toString();
+ const QString channel="watching-cloudstream-v";
+ if(!tag.startsWith(channel)) return fail("Release belongs to a different application channel.");
+ auto v=parseVersion(tag.mid(channel.size()));
  if(!v || !o["draft"].isBool() || o["draft"].toBool() || !o["assets"].isArray()) return fail("Invalid release tag or draft release.");
  // Build metadata has no precedence and is not part of the package naming contract.
  if(v->text.contains('+')) return fail("Unsupported release tag metadata.");
@@ -111,7 +129,7 @@ std::optional<Release> parseRelease(const QByteArray &json, Package package, QSt
  for(auto item:assets) {
   auto a=item.toObject(); if(a["name"].toString()!=expected) continue;
   ++matches; r.name=expected; r.url=QUrl(a["browser_download_url"].toString(),QUrl::StrictMode);
-  const QString path="/dcenhance/cloudstream-pc/releases/download/"+tag+"/"+expected;
+  const QString path="/latchidz/LATCHI-RELEASES/releases/download/"+tag+"/"+expected;
   if(!trustedUrl(r.url) || r.url.host()!="github.com" || r.url.path()!=path) return fail("Invalid release asset URL.");
   double size=a["size"].toDouble(-1); if(size<=0 || size>packageLimit || std::floor(size)!=size) return fail("Invalid or oversized release package.");
   r.size=qint64(size);

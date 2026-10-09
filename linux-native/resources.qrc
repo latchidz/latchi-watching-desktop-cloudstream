@@ -1,7 +1,8 @@
 <RCC>
   <qresource prefix="/assets">
-    <file alias="cloudstream.svg">assets/cloudstream.svg</file>
-    <file alias="cloudstream-launcher.png">assets/cloudstream-launcher.png</file>
+    <file alias="latchi-launcher.png">assets/latchi-launcher.png</file>
+    <file alias="cloudstream.svg">assets/latchi-launcher.svg</file>
+    <file alias="cloudstream-launcher.png">assets/latchi-launcher.png</file>
   </qresource>
   <qresource prefix="/player">
     <file alias="forward.svg">player/upstream/netflix_skip_forward.svg</file>
@@ -65,5 +66,15 @@
     <file alias="player-fullscreen-exit.svg">assets/icons/player-fullscreen-exit.svg</file>
     <file alias="player-back.svg">assets/icons/player-back.svg</file>
     <file alias="player-muted.svg">assets/icons/player-muted.svg</file>
+  </qresource>
+  <qresource prefix="/sourcecards">
+    <file alias="qissat-eshq-1.png">assets/latchi-sources/cards/qissat-eshq-1.png</file>
+    <file alias="qissat-eshq-2.png">assets/latchi-sources/cards/qissat-eshq-2.png</file>
+    <file alias="krmzy.png">assets/latchi-sources/cards/krmzy.png</file>
+    <file alias="mycima.png">assets/latchi-sources/cards/mycima.png</file>
+    <file alias="topcinema.png">assets/latchi-sources/cards/topcinema.png</file>
+    <file alias="tuktukcima.png">assets/latchi-sources/cards/tuktukcima.png</file>
+    <file alias="tuniflix.png">assets/latchi-sources/cards/tuniflix.png</file>
+    <file alias="wecima.png">assets/latchi-sources/cards/wecima.png</file>
   </qresource>
 </RCC>

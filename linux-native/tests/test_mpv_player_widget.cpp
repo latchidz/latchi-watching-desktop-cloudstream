@@ -327,6 +327,33 @@ private slots:
         QVERIFY(!host.isFullScreen());
     }
 
+    void latchiSilentVideoDecodesSeeksAndRenders() {
+        QTemporaryDir directory;
+        QVERIFY(directory.isValid());
+        const auto path = directory.filePath("lawful-generated-video.mp4");
+        QCOMPARE(QProcess::execute("ffmpeg", {"-hide_banner", "-loglevel", "error", "-y",
+            "-f", "lavfi", "-i", "testsrc2=size=480x270:rate=24", "-t", "5", "-an",
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", path}), 0);
+        QWidget window;
+        auto *layout = new QVBoxLayout(&window);
+        CloudStream::MpvPlayerWidget player;
+        layout->addWidget(&player); window.resize(480, 270); window.show();
+        QVERIFY(player.isAvailable());
+        CloudStream::PlaybackSource source;
+        source.source = "Generated lawful test"; source.name = "LATCHI smoke";
+        source.url = path; source.type = "VIDEO";
+        player.loadSource(source, {});
+        QTRY_VERIFY_WITH_TIMEOUT(player.position() > .4, 10000);
+        QTRY_VERIFY_WITH_TIMEOUT(player.renderedFrameCount() > 0, 5000);
+        player.setPaused(true); QTRY_VERIFY(player.isPaused());
+        player.seekTo(2.0); QTRY_VERIFY_WITH_TIMEOUT(player.position() > 1.5, 5000);
+        const auto frame = player.grabFramebuffer();
+        QVERIFY(!frame.isNull()); QSet<QRgb> colors;
+        for (int y=0; y<frame.height(); y+=12)
+            for (int x=0; x<frame.width(); x+=12) colors.insert(frame.pixel(x,y));
+        QVERIFY2(colors.size() >= 8, "Generated lawful video did not produce a decoded image");
+    }
+
     void rendersAndAdvancesGeneratedVideo() {
         QTemporaryDir directory;
         QVERIFY(directory.isValid());

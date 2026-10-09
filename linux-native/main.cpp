@@ -1,3 +1,4 @@
+#include "ui/LatchiSourceHub.h"
 #include "app/Logger.h"
 #include "app/ProcessCompletion.h"
 #include "app/PackagedRuntimeEnvironment.h"
@@ -261,19 +262,14 @@ private:
 class CloudStreamWindow final : public QMainWindow {
 public:
     explicit CloudStreamWindow(bool initializeContent = true)
-        : settings("CloudStream", "CloudStream Linux"),
+        : settings("LATCHI", "Watching CloudStream"),
           extensionRegistry(CloudStream::XdgPaths::dataDir() + "/extension-registry.json"),
           history(CloudStream::XdgPaths::dataDir() + "/watch-history.json"),
           collections(CloudStream::XdgPaths::dataDir() + "/library-collections.json"),
           downloadQueue(CloudStream::XdgPaths::dataDir() + "/download-queue.json"),
           downloadManager(&downloadQueue) {
-        setWindowTitle(
-#ifdef Q_OS_WIN
-            "CloudStream Windows"
-#else
-            "CloudStream Linux"
-#endif
-        );
+        setWindowTitle("LATCHI WATCHING");
+        setWindowIcon(QIcon(":/assets/latchi-launcher.png"));
         resize(1180, 760);
         setMinimumSize(900, 600);
         artworkLoader = new CloudStream::ArtworkLoader(
@@ -531,6 +527,8 @@ private:
     QStackedWidget *pages{};
     QStackedWidget *appSurfaces{};
     QWidget *sidebarPanel{};
+    QStackedWidget *latchiHomeSurface{};
+    CloudStream::LatchiSourceHub *latchiSourceHub{};
     QScrollArea *homeScrollArea{};
     QVBoxLayout *homeSectionsLayout{};
     QComboBox *homeProviderSelector{};
@@ -631,7 +629,7 @@ private:
         const bool expanded = layout == "Expanded side navigation";
         sidebarPanel->setVisible(layout != "Focus content");
         sidebarPanel->setFixedWidth(expanded ? 220 : 76);
-        const QStringList labels{"Home", "Search", "Library", "Downloads", "Settings"};
+        const QStringList labels{"الرئيسية", "البحث", "المكتبة", "التنزيلات", "الإعدادات"};
         for (int index = 0; index < navigationButtons.size(); ++index) {
             auto *button = navigationButtons[index];
             button->setFixedSize(expanded ? 200 : 52, 46);
@@ -674,11 +672,11 @@ private:
             112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         logo->setAlignment(Qt::AlignCenter);
         layout->addWidget(logo, 0, Qt::AlignHCenter);
-        auto *heading = new QLabel("CloudStream", overlay);
+        auto *heading = new QLabel("LATCHI WATCHING", overlay);
         heading->setObjectName("startupTitle");
         heading->setAlignment(Qt::AlignCenter);
         layout->addWidget(heading);
-        auto *message = new QLabel("Loading your streaming providers…", overlay);
+        auto *message = new QLabel(QString::fromUtf8("جارٍ تجهيز تجربة المشاهدة…"), overlay);
         message->setObjectName("startupMessage");
         message->setAlignment(Qt::AlignCenter);
         layout->addWidget(message);
@@ -704,6 +702,10 @@ protected:
     }
 
     void keyPressEvent(QKeyEvent *event) override {
+        if (event->key() == Qt::Key_Escape && pages && pages->currentIndex() == 0 &&
+            latchiHomeSurface && latchiHomeSurface->currentIndex() == 1 && !QApplication::activeModalWidget()) {
+            showLatchiSources(); event->accept(); return;
+        }
         if (event->key() == Qt::Key_Escape && pages && pages->currentIndex() != 0 &&
             !QApplication::activeModalWidget()) {
             pages->setCurrentIndex(0);
@@ -1101,7 +1103,7 @@ private:
             selectedProvider.value("mode").toString() != "provider" ||
             CloudStream::ProviderSelectionModel::shouldReloadHome(
                 currentHomeProviderKey, selectedProvider)) {
-            loadHomeContent();
+            if (!latchiHomeSurface || latchiHomeSurface->currentIndex() == 1) loadHomeContent();
         }
     }
 
@@ -1371,7 +1373,7 @@ private:
         });
         for (int i = 0; i < 5; ++i) {
             auto *shortcut = new QShortcut(QKeySequence("Ctrl+" + QString::number(i + 1)), this);
-            connect(shortcut, &QShortcut::activated, this, [this, i] { pages->setCurrentIndex(i); });
+            connect(shortcut, &QShortcut::activated, this, [this, i] { if (i == 0) showLatchiSources(); else pages->setCurrentIndex(i); });
         }
         layout->addWidget(pages, 1);
         appSurfaces = new QStackedWidget;
@@ -1399,7 +1401,7 @@ private:
         logo->setAlignment(Qt::AlignCenter);
         v->addWidget(logo, 0, Qt::AlignHCenter);
         v->addSpacing(14);
-        const QStringList labels = {"Home", "Search", "Library", "Downloads", "Settings"};
+        const QStringList labels = {"الرئيسية", "البحث", "المكتبة", "التنزيلات", "الإعدادات"};
         const QList<QPair<QString, QString>> icons = {
             {":/icons/home-outline.svg", ":/icons/home-filled.svg"},
             {":/icons/search.svg", ":/icons/search-active.svg"},
@@ -1426,6 +1428,7 @@ private:
             connect(nav, &QPushButton::toggled, this, [this, i](bool checked) {
                 if (checked && pages) pages->setCurrentIndex(i);
             });
+            if (i == 0) connect(nav, &QPushButton::clicked, this, &CloudStreamWindow::showLatchiSources);
             v->addWidget(nav, 0, Qt::AlignHCenter);
         }
         v->addStretch();
@@ -1462,11 +1465,15 @@ private:
 
         auto *toolbar = new QHBoxLayout;
         toolbar->setSpacing(10);
-        toolbar->addWidget(title("Home", 24));
+        auto *backToSources = button(QString::fromUtf8("المصادر ←"));
+        backToSources->setObjectName("latchiBackToSources");
+        connect(backToSources, &QPushButton::clicked, this, &CloudStreamWindow::showLatchiSources);
+        toolbar->addWidget(backToSources);
+        toolbar->addWidget(title(QString::fromUtf8("كتالوغ المصدر"), 24));
         toolbar->addStretch();
         auto *search = new QToolButton;
         search->setObjectName("topIconButton");
-        search->setAccessibleName("Search");
+        search->setAccessibleName("البحث");
         search->setToolTip("Search providers  ·  Ctrl+2");
         search->setIcon(QIcon(":/icons/search.svg"));
         search->setFixedSize(42, 42);
@@ -1499,7 +1506,7 @@ private:
         homeSearchLayout->setSpacing(8);
         homeSearchInput = new QLineEdit(homeSearchPanel);
         homeSearchInput->setObjectName("homeSearchField");
-        homeSearchInput->setPlaceholderText("Search this provider…");
+        homeSearchInput->setPlaceholderText(QString::fromUtf8("ابحث داخل هذا المصدر…"));
         homeSearchInput->setMinimumHeight(46);
         homeSearchInput->setClearButtonEnabled(true);
         homeSearchInput->addAction(QIcon(":/icons/search.svg"), QLineEdit::LeadingPosition);
@@ -1543,9 +1550,9 @@ private:
         heroLayout->addWidget(homeHeroMeta);
         auto *heroActions = new QHBoxLayout;
         heroActions->setSpacing(10);
-        homeHeroPlay = button("Play", true);
+        homeHeroPlay = button("تشغيل", true);
         homeHeroPlay->setIcon(QIcon(":/icons/play-dark.svg"));
-        homeHeroInfo = button("Info");
+        homeHeroInfo = button("التفاصيل");
         homeHeroInfo->setIcon(QIcon(":/icons/info.svg"));
         heroActions->addWidget(homeHeroPlay);
         heroActions->addWidget(homeHeroInfo);
@@ -1645,7 +1652,118 @@ private:
                 [this](int) { maybeAppendHomeSections(); });
         connect(homeScrollBar, &QScrollBar::rangeChanged, this,
                 [this](int, int) { maybeAppendHomeSections(); });
-        return homeScrollArea;
+        latchiHomeSurface = new QStackedWidget;
+        latchiHomeSurface->setObjectName("latchiHomeSurface");
+        latchiSourceHub = new CloudStream::LatchiSourceHub;
+        latchiHomeSurface->addWidget(latchiSourceHub);
+        latchiHomeSurface->addWidget(homeScrollArea);
+        latchiHomeSurface->setCurrentIndex(0);
+        connect(latchiSourceHub, &CloudStream::LatchiSourceHub::sourceActivated,
+                this, &CloudStreamWindow::openLatchiSource);
+        connect(latchiSourceHub, &CloudStream::LatchiSourceHub::extensionsRequested,
+                this, &CloudStreamWindow::showExtensionManager);
+        connect(latchiSourceHub, &CloudStream::LatchiSourceHub::networkRequested,
+                this, &CloudStreamWindow::showNetworkStreamDialog);
+        return latchiHomeSurface;
+    }
+
+public:
+    // Explicit entry point for catalog regression tests and source navigation.
+    void showLatchiCatalog() {
+        if (latchiHomeSurface) latchiHomeSurface->setCurrentIndex(1);
+    }
+    void showLatchiSources() {
+        if (activeDetailsDialog && !activeDetailsDialog->isWindow()) activeDetailsDialog->close();
+        if (integratedPlayer && !integratedPlayer->isWindow()) integratedPlayer->close();
+        homeRequestGeneration.begin();
+        if (activeHomeProcess && activeHomeProcess->state() != QProcess::NotRunning) activeHomeProcess->kill();
+        if (latchiHomeSurface) latchiHomeSurface->setCurrentIndex(0);
+        if (pages) pages->setCurrentIndex(0);
+    }
+private:
+    bool selectLatchiProvider(const QString &id) {
+        if (!homeProviderSelector) return false;
+        for (int i = 2; i < homeProviderSelector->count(); ++i) {
+            const auto provider = QJsonObject::fromVariantMap(homeProviderSelector->itemData(i).toMap());
+            if (provider.value("extensionName").toString() != id) continue;
+            bool correctRepository = false;
+            for (const auto &record : extensionRegistry.extensions()) {
+                if (record.internalName == id && record.enabled &&
+                    record.artifactPath == provider.value("jarPath").toString() &&
+                    record.repositoryUrl == "https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/main/repo") {
+                    correctRepository = true; break;
+                }
+            }
+            if (!correctRepository) continue;
+            const auto key = providerKey(provider);
+            settings.setValue("homeProviderKey", key);
+            settings.setValue("searchProviderKeys", QStringList{key});
+            refreshSearchProviderButton();
+            showLatchiCatalog();
+            pages->setCurrentIndex(0);
+            if (homeProviderSelector->currentIndex() == i) loadHomeContent();
+            else homeProviderSelector->setCurrentIndex(i);
+            if (homeScrollArea) homeScrollArea->verticalScrollBar()->setValue(0);
+            latchiSourceHub->setBusy(false, QString::fromUtf8("المصدر جاهز. اختر بطاقة لفتح كتالوغه."));
+            return true;
+        }
+        return false;
+    }
+
+    void openLatchiSource(const QString &id) {
+        if (!latchiSourceHub || latchiSourceHub->busy()) return;
+        bool known = false;
+        QString display;
+        for (const auto &source : CloudStream::LatchiSourceHub::sources()) {
+            if (source.id == id) { known = true; display = source.arabic; break; }
+        }
+        if (!known || selectLatchiProvider(id)) return;
+        const QString repository = "https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/main/repo";
+        const auto consent = QMessageBox::question(this, QString::fromUtf8("تثبيت إضافة المصدر"),
+            QString::fromUtf8("لتشغيل %1، سنضيف مستودع «3rabi عربي» وننزّل إضافته، ثم نتحقق من بصمتها ونحوّلها إلى JVM.\n\nالإضافات تشغّل كودًا من طرف ثالث؛ وافق فقط إذا كنت تثق بالمصدر. استخدم المحتوى الذي تملك حق مشاهدته.\n\nالمستودع: %2\n\nهل تريد المتابعة؟").arg(display, repository),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (consent != QMessageBox::Yes) return;
+        if (CloudStream::ProviderHostCommand::discover().isEmpty()) {
+            latchiSourceHub->setMessage(QString::fromUtf8("مضيف الإضافات غير موجود. أعد استخراج الحزمة كاملة أو أعد التثبيت."), true);
+            return;
+        }
+        latchiSourceHub->setBusy(true, QString::fromUtf8("جارٍ تنزيل بيانات المصدر والتحقق من الإضافة…"));
+        const QUrl manifest("https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/builds/plugins.json");
+        auto *reply = network.get(cloudStreamRequest(manifest));
+        QTimer::singleShot(20000, reply, [reply] { if (!reply->isFinished()) reply->abort(); });
+        connect(reply, &QNetworkReply::finished, this, [this, reply, id, repository] {
+            const auto bytes = reply->readAll();
+            const auto error = reply->error();
+            reply->deleteLater();
+            QList<CloudStream::PluginInfo> plugins;
+            QString parseError;
+            if (error != QNetworkReply::NoError || bytes.size() > 2 * 1024 * 1024 ||
+                !CloudStream::RepositoryManifestParser::parsePluginList(bytes, &plugins, &parseError)) {
+                latchiSourceHub->setBusy(false);
+                latchiSourceHub->setMessage(QString::fromUtf8("تعذّر تحميل بيانات الإضافات. تحقق من اتصالك وحاول مجددًا."), true);
+                return;
+            }
+            for (const auto &plugin : plugins) {
+                if (plugin.internalName != id) continue;
+                if (plugin.status == 0 || !plugin.url.startsWith("https://raw.githubusercontent.com/Abodabodd/re-3arabi/") ||
+                    !plugin.fileHash.startsWith("sha256-")) {
+                    latchiSourceHub->setBusy(false);
+                    latchiSourceHub->setMessage(QString::fromUtf8("المصدر متوقف أو لا يحتوي على بصمة موثوقة؛ لم تُثبّت الإضافة."), true);
+                    return;
+                }
+                extensionRegistry.addRepository({QString::fromUtf8("3rabi عربي"), repository});
+                installExtension(plugin, repository, [this, id](bool downloaded) {
+                    publishStagedProviders();
+                    latchiSourceHub->setBusy(false);
+                    if (!downloaded || !selectLatchiProvider(id)) {
+                        latchiSourceHub->setMessage(QString::fromUtf8("لم تصبح الإضافة قابلة للتشغيل. راجع إدارة الإضافات؛ لم ندّعِ نجاح تشغيل المصدر."), true);
+                    }
+                });
+                return;
+            }
+            latchiSourceHub->setBusy(false);
+            latchiSourceHub->setMessage(QString::fromUtf8("هذا المصدر غير موجود في قائمة المستودع الحالية."), true);
+        });
     }
 
     QWidget *continueWatchingSection() {
@@ -1655,9 +1773,9 @@ private:
         auto *layout = new QVBoxLayout(section);
         layout->setContentsMargins(0, 0, 0, 0);
         auto *header = new QHBoxLayout;
-        header->addWidget(title("Continue watching", 18));
+        header->addWidget(title("متابعة المشاهدة", 18));
         header->addStretch();
-        auto *browse = button("Library");
+        auto *browse = button("المكتبة");
         browse->setMaximumWidth(100);
         connect(browse, &QPushButton::clicked, this, [this] { pages->setCurrentIndex(2); });
         header->addWidget(browse);
@@ -2314,7 +2432,7 @@ private:
     }
 
     QWidget *searchPage() {
-        auto *page = pageFrame("Search", {});
+        auto *page = pageFrame("البحث", {});
         auto *v = qobject_cast<QVBoxLayout *>(page->layout());
         auto *query = new QLineEdit;
         searchInput = query;
@@ -2324,7 +2442,7 @@ private:
         query->setClearButtonEnabled(true);
         auto *submitAction = query->addAction(QIcon(":/icons/search.svg"), QLineEdit::LeadingPosition);
         auto *providerAction = query->addAction(QIcon(":/icons/tune.svg"), QLineEdit::TrailingPosition);
-        submitAction->setToolTip("Search");
+        submitAction->setToolTip("البحث");
         providerAction->setToolTip("Choose search providers");
         v->addWidget(query);
 
@@ -2791,7 +2909,7 @@ private:
     }
 
     QWidget *libraryPage() {
-        auto *page = pageFrame("Library", {});
+        auto *page = pageFrame("المكتبة", {});
         auto *v = qobject_cast<QVBoxLayout *>(page->layout());
         auto *collectionBar = new QHBoxLayout;
         auto *collectionSelector = new QComboBox;
@@ -3060,7 +3178,7 @@ private:
         selectionBar->setObjectName("selectionBar");
         auto *actions = new QHBoxLayout(selectionBar);
         actions->setContentsMargins(12, 8, 12, 8);
-        auto *play = button("Play", true);
+        auto *play = button("تشغيل", true);
         play->setIcon(QIcon(":/icons/play-dark.svg"));
         auto *playWithSubtitles = button("Subtitles…");
         auto *details = button("Details");
@@ -3229,7 +3347,7 @@ private:
     }
 
     QWidget *downloadsPage() {
-        auto *page = pageFrame("Downloads", {});
+        auto *page = pageFrame("التنزيلات", {});
         auto *v = qobject_cast<QVBoxLayout *>(page->layout());
         const auto downloadPath = settings.value("downloadFolder", QDir::homePath() + "/Downloads").toString();
         QDir().mkpath(downloadPath);
@@ -3276,7 +3394,7 @@ private:
         auto *selectionActions = new QHBoxLayout;
         auto *pause = button("Pause");
         auto *resume = button("Resume");
-        auto *play = button("Play");
+        auto *play = button("تشغيل");
         play->setIcon(QIcon(":/icons/play.svg"));
         auto *remove = button("Remove");
         remove->setProperty("danger", true);
@@ -3581,7 +3699,7 @@ private:
         });
         connect(stream, &QPushButton::clicked, this, [this] { showNetworkStreamDialog(); });
         connect(open, &QPushButton::clicked, this, [this, downloadPath] {
-            showInAppFolderDialog(downloadPath, "Downloads", false, {});
+            showInAppFolderDialog(downloadPath, "التنزيلات", false, {});
         });
         return page;
     }
@@ -5520,7 +5638,7 @@ private:
 
             auto *heroActions = new QHBoxLayout;
             heroActions->setSpacing(9);
-            auto *play = button(episodeCatalog.isEmpty() ? "Play" : "Play episode", true);
+            auto *play = button(episodeCatalog.isEmpty() ? "تشغيل" : "Play episode", true);
             play->setIcon(QIcon(":/icons/play-dark.svg"));
             auto *chooseSource = button("Sources");
             chooseSource->setIcon(QIcon(":/icons/source-selector.svg"));
@@ -5960,13 +6078,14 @@ int main(int argc, char **argv) {
             CloudStream::setRuntimeEnvironmentVariable(QString::fromLatin1(name), runtimeEnvironment.value(name));
     }
 #endif
-    QCoreApplication::setOrganizationName("recloudstream");
-    QCoreApplication::setOrganizationDomain("recloudstream.github.io");
-    QCoreApplication::setApplicationName("CloudStream");
+    QCoreApplication::setOrganizationName("LATCHI");
+    QCoreApplication::setOrganizationDomain("github.com/latchidz");
+    QCoreApplication::setApplicationName("LATCHI WATCHING");
+    app.setLayoutDirection(Qt::RightToLeft);
     QCoreApplication::setApplicationVersion(CloudStream::Updates::buildVersion());
-    QGuiApplication::setDesktopFileName("io.github.recloudstream.cloudstream");
+    QGuiApplication::setDesktopFileName("io.github.latchidz.watching");
     QCommandLineParser parser;
-    parser.setApplicationDescription("A native Linux client for CloudStream providers");
+    parser.setApplicationDescription("LATCHI WATCHING: native Qt/JVM CloudStream desktop client");
     parser.addHelpOption();
     parser.addVersionOption();
     const QCommandLineOption smokeOption("smoke-test", "Show one event-loop cycle without networking, then exit.");
@@ -6007,7 +6126,7 @@ int main(int argc, char **argv) {
     parser.addOption(searchProbeOption);
     parser.process(app);
     if (!CloudStream::XdgPaths::ensureDirectories()) {
-        QMessageBox::critical(nullptr, "CloudStream Linux", "Could not create the application data directories.");
+        QMessageBox::critical(nullptr, "LATCHI WATCHING", "Could not create the application data directories.");
         return 1;
     }
     CloudStream::installFileLogging(CloudStream::XdgPaths::logFile());
@@ -6283,7 +6402,7 @@ int main(int argc, char **argv) {
     }
     if (parser.isSet(installAllExtensionsOption)) {
         const auto repositoryUrl = parser.value(installAllExtensionsOption).trimmed();
-        QSettings commandSettings("CloudStream", "CloudStream Linux");
+        QSettings commandSettings("LATCHI", "Watching CloudStream");
         commandSettings.setValue("selectedRepositoryUrl", repositoryUrl);
         CloudStreamWindow window(true);
         window.show();
@@ -6391,7 +6510,12 @@ int main(int argc, char **argv) {
                          expected.toUtf8().constData(), actual.toUtf8().constData());
             return 2;
         }
-        std::fprintf(stdout, "SMOKE_TEST_OK platform=%s\n", actual.toUtf8().constData());
+        const auto *hub = window.findChild<CloudStream::LatchiSourceHub *>("latchiSourceHub");
+        const auto *surface = window.findChild<QStackedWidget *>("latchiHomeSurface");
+        if (!hub || !surface || surface->currentIndex() != 0 || hub->sources().size() != 8) {
+            std::fprintf(stderr, "SMOKE_TEST_FAILED source hub missing\n"); return 4;
+        }
+        std::fprintf(stdout, "SMOKE_TEST_OK platform=%s source_cards=8 home=source-hub\n", actual.toUtf8().constData());
         return 0;
     }
     QPixmap splashCanvas(520, 320);
@@ -6405,12 +6529,12 @@ int main(int argc, char **argv) {
         brandFont.setPointSize(18);
         brandFont.setBold(true);
         painter.setFont(brandFont);
-        painter.drawText(QRect(0, 205, splashCanvas.width(), 38), Qt::AlignCenter, "CLOUDSTREAM");
+        painter.drawText(QRect(0, 205, splashCanvas.width(), 38), Qt::AlignCenter, "LATCHI WATCHING");
         painter.setPen(QColor(muted));
         QFont statusFont = app.font();
         statusFont.setPointSize(10);
         painter.setFont(statusFont);
-        painter.drawText(QRect(0, 245, splashCanvas.width(), 28), Qt::AlignCenter, "Loading repositories and local library…");
+        painter.drawText(QRect(0, 245, splashCanvas.width(), 28), Qt::AlignCenter, QString::fromUtf8("جارٍ تجهيز المصادر والمكتبة المحلية…"));
     }
     QSplashScreen splash(splashCanvas);
     splash.show();

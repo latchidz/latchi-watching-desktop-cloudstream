@@ -90,6 +90,8 @@ MpvPlayerWidget::MpvPlayerWidget(QWidget *parent) : QOpenGLWidget(parent) {
     mpv_set_option_string(handle, "hwdec", "auto-safe");
     mpv_set_option_string(handle, "keep-open", "yes");
     mpv_set_option_string(handle, "terminal", "no");
+    // Explicit hosted-test sink: production audio remains the normal device output.
+    if (qEnvironmentVariable("LATCHI_CI_NULL_AUDIO") == "1") mpv_set_option_string(handle, "ao", "null");
     mpv_set_option_string(handle, "input-default-bindings", "no");
     const auto initialized = mpv_initialize(handle);
     if (initialized < 0) {

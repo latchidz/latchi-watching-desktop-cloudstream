@@ -29,7 +29,7 @@ def main():
     output = args.output.resolve()
     marker = identity("windows-setup", args.version).strip()
     require_build_version(runtime / "cloudstream-version.txt")
-    for required in ('cloudstream.exe', 'runtime/bin/java.exe', 'platforms/qwindows.dll'):
+    for required in ('latchi-watching.exe', 'runtime/bin/java.exe', 'platforms/qwindows.dll'):
         if not (runtime / required).is_file():
             parser.error(f'Missing runtime file: {required}')
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -44,17 +44,17 @@ def main():
     script = '''Unicode true
 !include "MUI2.nsh"
 !include "x64.nsh"
-Name "CloudStream PC"
+Name "LATCHI WATCHING CloudStream"
 VIProductVersion "@NUMERIC_VERSION@.0"
-VIAddVersionKey /LANG=1033 "ProductName" "CloudStream PC"
-VIAddVersionKey /LANG=1033 "CompanyName" "dcenhance"
-VIAddVersionKey /LANG=1033 "FileDescription" "CloudStream PC per-user installer"
+VIAddVersionKey /LANG=1033 "ProductName" "LATCHI WATCHING CloudStream"
+VIAddVersionKey /LANG=1033 "CompanyName" "LATCHI"
+VIAddVersionKey /LANG=1033 "FileDescription" "LATCHI WATCHING CloudStream per-user installer"
 VIAddVersionKey /LANG=1033 "FileVersion" "@VERSION@"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "CloudStream contributors; GPL v3"
 !define MUI_ICON "@ICON@"
 !define MUI_UNICON "@ICON@"
 OutFile "@OUTPUT@"
-InstallDir "$LOCALAPPDATA\\Programs\\CloudStream PC"
+InstallDir "$LOCALAPPDATA\\Programs\\LATCHI WATCHING CloudStream"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 !define MUI_ABORTWARNING
@@ -66,11 +66,11 @@ SetCompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "English"
 Function .onInit
   ${IfNot} ${RunningX64}
-    MessageBox MB_ICONSTOP "CloudStream PC requires 64-bit Windows."
+    MessageBox MB_ICONSTOP "LATCHI WATCHING CloudStream requires 64-bit Windows."
     Abort
   ${EndIf}
 FunctionEnd
-Section "CloudStream PC"
+Section "LATCHI WATCHING CloudStream"
   SetShellVarContext current
   SetOutPath "$INSTDIR"
   File /r "@FILE_PATTERN@"
@@ -78,15 +78,15 @@ Section "CloudStream PC"
   FileWrite $0 "@IDENTITY@"
   FileClose $0
   WriteUninstaller "$INSTDIR\\Uninstall.exe"
-  CreateDirectory "$SMPROGRAMS\\CloudStream PC"
-  CreateShortcut "$SMPROGRAMS\\CloudStream PC\\CloudStream PC.lnk" "$INSTDIR\\cloudstream.exe"
-  CreateShortcut "$DESKTOP\\CloudStream PC.lnk" "$INSTDIR\\cloudstream.exe"
-  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "DisplayName" "CloudStream PC"
-  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "DisplayVersion" "@VERSION@"
-  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "Publisher" "dcenhance"
-  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "UninstallString" '$\\"$INSTDIR\\Uninstall.exe$\\"'
-  WriteRegDWORD HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "NoModify" 1
-  WriteRegDWORD HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC" "NoRepair" 1
+  CreateDirectory "$SMPROGRAMS\\LATCHI WATCHING CloudStream"
+  CreateShortcut "$SMPROGRAMS\\LATCHI WATCHING CloudStream\\LATCHI WATCHING CloudStream.lnk" "$INSTDIR\\latchi-watching.exe"
+  CreateShortcut "$DESKTOP\\LATCHI WATCHING CloudStream.lnk" "$INSTDIR\\latchi-watching.exe"
+  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "DisplayName" "LATCHI WATCHING CloudStream"
+  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "DisplayVersion" "@VERSION@"
+  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "Publisher" "LATCHI"
+  WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "UninstallString" '$\\"$INSTDIR\\Uninstall.exe$\\"'
+  WriteRegDWORD HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "NoModify" 1
+  WriteRegDWORD HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream" "NoRepair" 1
 SectionEnd
 Section "Uninstall"
   SetShellVarContext current
@@ -94,13 +94,13 @@ Section "Uninstall"
   Delete "$INSTDIR\\Uninstall.exe"
 @REMOVES@
   RMDir "$INSTDIR"
-  Delete "$DESKTOP\\CloudStream PC.lnk"
-  Delete "$SMPROGRAMS\\CloudStream PC\\CloudStream PC.lnk"
-  RMDir "$SMPROGRAMS\\CloudStream PC"
-  DeleteRegKey HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\CloudStreamPC"
+  Delete "$DESKTOP\\LATCHI WATCHING CloudStream.lnk"
+  Delete "$SMPROGRAMS\\LATCHI WATCHING CloudStream\\LATCHI WATCHING CloudStream.lnk"
+  RMDir "$SMPROGRAMS\\LATCHI WATCHING CloudStream"
+  DeleteRegKey HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\LatchiWatchingCloudStream"
 SectionEnd
 '''
-    for key, value in {'NUMERIC_VERSION': args.version.partition('-')[0], 'IDENTITY': nsis_quote(marker), 'OUTPUT': nsis_quote(output), 'FILE_PATTERN': nsis_file_pattern(runtime), 'ICON': nsis_quote(pathlib.Path(__file__).with_name('cloudstream.ico').resolve()), 'VERSION': nsis_quote(args.version), 'DELETES': deletes, 'REMOVES': removes}.items():
+    for key, value in {'NUMERIC_VERSION': args.version.partition('-')[0], 'IDENTITY': nsis_quote(marker), 'OUTPUT': nsis_quote(output), 'FILE_PATTERN': nsis_file_pattern(runtime), 'ICON': nsis_quote(pathlib.Path(__file__).with_name('latchi-watching.ico').resolve()), 'VERSION': nsis_quote(args.version), 'DELETES': deletes, 'REMOVES': removes}.items():
         script = script.replace('@' + key + '@', value)
     with tempfile.TemporaryDirectory(prefix='cloudstream-nsis-') as tmp:
         path = pathlib.Path(tmp) / 'installer.nsi'

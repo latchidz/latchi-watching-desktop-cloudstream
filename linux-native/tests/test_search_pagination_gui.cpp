@@ -123,7 +123,7 @@ void SearchPaginationGuiTest::staleSearchCannotAppendAfterNewQuery() {
         QCOMPARE(results->item(0)->text(), QString("First"));
     }
 void SearchPaginationGuiTest::providerSelectionChangeInvalidatesPendingPage() {
-    QSettings settings("CloudStream", "CloudStream Linux");
+    QSettings settings("LATCHI", "Watching CloudStream");
     settings.remove("searchProviderKeys");
     CloudStreamWindow window;
     window.show();

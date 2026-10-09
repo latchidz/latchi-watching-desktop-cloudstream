@@ -1,16 +1,24 @@
-name: Windows release build and verification
+name: LATCHI WATCHING native Windows build and release
+
 on:
+  push:
+    branches: [latchi-native-windows]
   workflow_dispatch:
+
 permissions:
   contents: read
+  actions: read
+
+concurrency:
+  group: latchi-native-windows-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   windows:
+    if: github.repository == 'latchidz/latchi-watching-desktop-cloudstream'
     runs-on: windows-2022
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-        with:
-          path: tooling
       - uses: actions/checkout@v4
         with:
           path: source
@@ -21,29 +29,58 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Install Qt development tools
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Qt 6 development tools
         shell: pwsh
         run: |
           python -m pip install aqtinstall==3.3.0 pefile
-          if ($LASTEXITCODE) { throw 'Python tools failed' }
+          if ($LASTEXITCODE) { throw 'Python tooling failed' }
           python -m aqt install-qt windows desktop 6.8.3 win64_msvc2022_64 -O C:\Qt
-          if ($LASTEXITCODE) { throw 'Qt install failed' }
-      - name: Build current source and test audited runtime
+          if ($LASTEXITCODE) { throw 'Qt installation failed' }
+      - name: Build and verify the real native application
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set PATH=C:\Qt\6.8.3\msvc2022_64\bin;C:\Program Files (x86)\NSIS;%PATH%
-          python tooling\packaging\ci\windows-release.py
+          python source\packaging\ci\windows-release.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: windows-release-evidence
+          name: latchi-windows-evidence
           path: evidence/
           if-no-files-found: error
+          retention-days: 14
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
-          name: windows-release-packages
+          name: latchi-windows-release-packages
           path: output/
           compression-level: 0
           if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: windows
+    if: github.repository == 'latchidz/latchi-watching-desktop-cloudstream' && github.ref == 'refs/heads/latchi-native-windows'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: latchi-windows-release-packages
+          path: output
+      - name: Publish only verified packages, source, notices and dependency sources
+        env:
+          LATCHI_RELEASE_TOKEN: ${{ secrets.LATCHI_NATIVE_RELEASE_TOKEN }}
+        run: python packaging/ci/publish-release.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: latchi-public-release-result
+          path: release-result.json
+          if-no-files-found: warn
+          retention-days: 14
