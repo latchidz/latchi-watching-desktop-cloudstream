@@ -34,10 +34,10 @@ compose.desktop {
         mainClass = "com.lagradost.cloudstream4.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "CloudStream"
+            packageName = "LATCHI WATCHING"
             packageVersion = "1.0.0"
 
-            val iconsRoot = project.file("desktop-icons")
+            val iconsRoot = project.file("src/desktop-icons")
             macOS {
                 // iconFile.set(iconsRoot.resolve("icon-mac.icns"))
             }
