@@ -12,9 +12,13 @@ $versionInfo = (Get-Item publish/LATCHI-WATCHING.exe).VersionInfo
 if ($versionInfo.ProductName -ne 'LATCHI WATCHING' -or $versionInfo.FileVersion -notlike "$version*") { throw 'Renamed EXE/version identity mismatch' }
 $zip = Join-Path $root "output/LATCHI-WATCHING-$version-Windows-x64.zip"
 Compress-Archive -Path publish/* -DestinationPath $zip -CompressionLevel Optimal
-choco install innosetup --version=6.3.1 -y --no-progress
-if ($LASTEXITCODE) { throw 'Inno Setup installation failed' }
 $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+if (-not (Test-Path $iscc)) {
+  choco install innosetup -y --no-progress
+  if ($LASTEXITCODE) { throw 'Inno Setup installation failed' }
+}
+if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler missing' }
+Write-Host "Using installed Inno Setup: $((Get-Item $iscc).VersionInfo.FileVersion)"
 & $iscc "/DMyAppVersion=$version" installer/latchi-watching.iss
 if ($LASTEXITCODE) { throw 'Inno Setup compiler failed' }
 $setup = Get-ChildItem installer/Output/*.exe | Select-Object -First 1
