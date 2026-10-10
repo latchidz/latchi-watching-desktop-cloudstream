@@ -1,0 +1,134 @@
+{
+  "repository": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/main/repo",
+  "manifest": "https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/builds/plugins.json",
+  "sources": [
+    {
+      "id": "3isk",
+      "arabic": "قصة عشق ١",
+      "english": "3isk",
+      "card": "qissat-eshq-1.png",
+      "accent": "#ed6379",
+      "logo": {
+        "url": "https://3esk.onl/wp-content/uploads/2021/01/3isk-logo.png",
+        "available": true,
+        "sha256": "195767611c20bf5c8f26e053d0054fe0a761055aebbbf56ec416be1f76eb717c",
+        "original_size": [
+          500,
+          127
+        ]
+      }
+    },
+    {
+      "id": "eseek",
+      "arabic": "قصة عشق ٢",
+      "english": "Eshek",
+      "card": "qissat-eshq-2.png",
+      "accent": "#f1af6c",
+      "logo": {
+        "url": "https://gesseh.net/wp-content/uploads/2024/10/keesatlogo.png",
+        "available": true,
+        "sha256": "a48550990f309d6810be767512477e61e07d744180cfc755902d87e17aae59d5",
+        "original_size": [
+          1000,
+          253
+        ]
+      }
+    },
+    {
+      "id": "Krmzy",
+      "arabic": "قرمزي",
+      "english": "Krmzy",
+      "card": "krmzy.png",
+      "accent": "#bc83f8",
+      "logo": {
+        "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwTnAJOvyri3uHzHxjkEdlaBBKs8MAvIuJtFmCoo9u5qYiuFpHZjcl6tDi&s=10",
+        "available": true,
+        "sha256": "6aea3124e0bc478679a4fbc015d1d9a48b15d369fcbe8039f7420163bacc4a61",
+        "original_size": [
+          400,
+          400
+        ]
+      }
+    },
+    {
+      "id": "MyCimaProvider",
+      "arabic": "ماي سيما",
+      "english": "MyCima",
+      "card": "mycima.png",
+      "accent": "#69cdc3",
+      "logo": {
+        "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxoF3lscri32oVf0iQlhbjFEoUn2xg3OmQIx4wYdDmqw&s",
+        "available": true,
+        "sha256": "8b10864e907da092f855a52c8eda644c4e2d049842c407c622b832946e5f9b43",
+        "original_size": [
+          225,
+          225
+        ]
+      }
+    },
+    {
+      "id": "Topcinema",
+      "arabic": "توب سينما",
+      "english": "TopCinema",
+      "card": "topcinema.png",
+      "accent": "#74b6ff",
+      "logo": {
+        "url": "https://web8.topcinema.cam/wp-content/uploads/2023/05/cropped-icon-32x32.png",
+        "available": true,
+        "sha256": "46ea39c723ef2604ca2fe78f6390641b3e898b3fae5c9947f46a08f2f270ab3a",
+        "original_size": [
+          32,
+          32
+        ]
+      }
+    },
+    {
+      "id": "TukTukcima",
+      "arabic": "توك توك سيما",
+      "english": "TukTukcima",
+      "card": "tuktukcima.png",
+      "accent": "#f1d075",
+      "logo": {
+        "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ10TEG3tTtkEF9_g3IslEP3xs0wx9EVhBs7b_H5M1gpg&s=10",
+        "available": true,
+        "sha256": "8daf80ac7e47156c67c26719214fc03b8b80d1a6d9fd8c300fc88ace899d71df",
+        "original_size": [
+          447,
+          447
+        ]
+      }
+    },
+    {
+      "id": "Tuniflix",
+      "arabic": "تونيفليكس",
+      "english": "Tuniflix",
+      "card": "tuniflix.png",
+      "accent": "#b398fa",
+      "logo": {
+        "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe95deIIAAbyR9ArSievPWdM2QwiVG9bbQ6Y1uDIbRBpathzSs45b8uQ4&s=10",
+        "available": true,
+        "sha256": "9bd92f54dd4728e01d9f6f610b736bba5727e1e47ab62faa1ce932e536164680",
+        "original_size": [
+          300,
+          300
+        ]
+      }
+    },
+    {
+      "id": "Wecima",
+      "arabic": "وي سيما",
+      "english": "WeCima",
+      "card": "wecima.png",
+      "accent": "#f490bb",
+      "logo": {
+        "url": "https://wecima.ac/static/img/favicon.png",
+        "available": true,
+        "sha256": "ba49d8a85758d16b31c26a5819e88284e32c70d29018284b9aaa6734c8d44ad5",
+        "original_size": [
+          323,
+          323
+        ]
+      }
+    }
+  ]
+}

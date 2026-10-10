@@ -1,0 +1,86 @@
+name: LATCHI WATCHING Windows — Play website edition
+on:
+  push:
+    branches: [watching-play-windows]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: watching-play-windows-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows:
+    if: github.repository == 'latchidz/latchi-watching-desktop-cloudstream'
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile the WPF application
+        run: dotnet build -c Release --warnaserror
+      - name: Run required unit and URL safety tests
+        run: dotnet test tests/LatchiWatching.Tests -c Release --no-build --logger "trx;LogFileName=core-tests.trx" --results-directory evidence
+      - name: Publish the actual Windows x64 application
+        run: dotnet publish src/LatchiWatching.App/LatchiWatching.App.csproj -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o publish
+      - name: Install WebView2 and lawful-video test tooling
+        shell: pwsh
+        run: |
+          python -m pip install Pillow
+          if ($LASTEXITCODE) { throw 'Pillow installation failed' }
+          if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) {
+            choco install ffmpeg -y --no-progress
+            if ($LASTEXITCODE) { throw 'FFmpeg installation failed' }
+            $env:Path += ';C:\ProgramData\chocolatey\bin'
+          }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile webview2-setup.exe
+          $p = Start-Process ./webview2-setup.exe -ArgumentList '/silent /install' -PassThru -Wait
+          if ($p.ExitCode -notin @(0,-2147219198)) { Write-Host "WebView2 bootstrap exit $($p.ExitCode); application self-test will verify runtime availability." }
+      - name: Verify eight cards, exact 3:1 artwork, fullscreen video and popup blocking
+        shell: pwsh
+        run: ./packaging/test-windows-ui.ps1
+      - name: Build installer and verify install/uninstall lifecycle
+        shell: pwsh
+        run: ./packaging/package-windows.ps1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: watching-windows-evidence
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: watching-windows-packages
+          path: output/
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 3
+  publish:
+    needs: windows
+    if: github.repository == 'latchidz/latchi-watching-desktop-cloudstream' && github.ref == 'refs/heads/watching-play-windows'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: watching-windows-packages
+          path: output
+      - name: Publish verified installer, portable, artwork and sanitized source
+        env:
+          LATCHI_RELEASE_TOKEN: ${{ secrets.LATCHI_WATCHING_WEBSITE_RELEASE_TOKEN }}
+        run: python packaging/publish-release.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: watching-public-release-result
+          path: release-result.json
+          if-no-files-found: warn
+          retention-days: 14

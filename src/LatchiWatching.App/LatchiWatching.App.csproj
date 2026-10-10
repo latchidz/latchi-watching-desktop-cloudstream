@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework><UseWPF>true</UseWPF><EnableWindowsTargeting>true</EnableWindowsTargeting><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><PlatformTarget>x64</PlatformTarget><AssemblyName>LATCHI-WATCHING</AssemblyName><RootNamespace>LatchiWatching.App</RootNamespace><ApplicationIcon>../../assets/appicon.ico</ApplicationIcon><Version>1.0.0</Version><Product>LATCHI WATCHING</Product><Company>LATCHI</Company><Authors>LATCHI</Authors><Description>Eight-source Windows website edition, using the LATCHI PLAY WPF and WebView2 player design.</Description><SatelliteResourceLanguages>en</SatelliteResourceLanguages></PropertyGroup>
+<ItemGroup><PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31"/><ProjectReference Include="../LatchiWatching.Core/LatchiWatching.Core.csproj"/></ItemGroup>
+<ItemGroup><Content Include="wwwroot/**/*" CopyToOutputDirectory="PreserveNewest"/><Resource Include="../../assets/appicon.ico" Link="assets/appicon.ico"/></ItemGroup>
+</Project>

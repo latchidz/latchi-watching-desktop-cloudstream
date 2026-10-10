@@ -1,0 +1,66 @@
+[
+  {
+    "id": "3isk",
+    "arabic": "قصة عشق ١",
+    "english": "3isk",
+    "image": "assets/sources/qissat-eshq-1.jpg",
+    "homepage": "https://3esk.onl",
+    "url": "https://3esk.onl"
+  },
+  {
+    "id": "eseek",
+    "arabic": "قصة عشق ٢",
+    "english": "Eseek",
+    "image": "assets/sources/qissat-eshq-2.jpg",
+    "homepage": "https://qeseh.net",
+    "url": "https://qeseh.net"
+  },
+  {
+    "id": "Krmzy",
+    "arabic": "قرمزي",
+    "english": "Krmzy",
+    "image": "assets/sources/krmzy.jpg",
+    "homepage": "https://krmzi.org",
+    "url": "https://krmzi.org"
+  },
+  {
+    "id": "MyCimaProvider",
+    "arabic": "ماي سيما",
+    "english": "MyCima",
+    "image": "assets/sources/mycima.jpg",
+    "homepage": "https://mycima.living",
+    "url": "https://mycima.living"
+  },
+  {
+    "id": "Topcinema",
+    "arabic": "توب سينما",
+    "english": "TopCinema",
+    "image": "assets/sources/topcinema.jpg",
+    "homepage": "https://web8.topcinema.cam",
+    "url": "https://web8.topcinema.cam"
+  },
+  {
+    "id": "TukTukcima",
+    "arabic": "توك توك سيما",
+    "english": "TukTukCima",
+    "image": "assets/sources/tuktukcima.jpg",
+    "homepage": "https://tuktukhd.com",
+    "url": "https://tuktukhd.com"
+  },
+  {
+    "id": "Tuniflix",
+    "arabic": "تونيفليكس",
+    "english": "TuniFlix",
+    "image": "assets/sources/tuniflix.jpg",
+    "homepage": "https://tuniflix.site",
+    "url": "https://tuniflix.site"
+  },
+  {
+    "id": "Wecima",
+    "arabic": "وي سيما",
+    "english": "WeCima",
+    "image": "assets/sources/wecima.jpg",
+    "homepage": "https://wecima.ac",
+    "url": "https://wecima.ac"
+  }
+]
